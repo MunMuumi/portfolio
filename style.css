@@ -23,6 +23,7 @@ a:hover {
 
 h1,h2,h3,p,figure{
   margin: 0;
+  padding: 0;
 }
 
 h1, h2{
@@ -42,6 +43,7 @@ p, li{
   margin-top: 0.7rem;
   font-size: 1.2rem;
 }
+
 
 .navbar {
   background-color: #22262a; 
@@ -117,4 +119,17 @@ p, li{
       padding: 1rem;
       font-size: 1rem; 
   }
+}
+
+h1{
+  font-size: 1.8rem;
+}
+
+h2{
+  margin-top: 0.8rem;
+  font-size: 1.3rem;
+}
+p, li{
+  margin-top: 0.5rem;
+  font-size: 1rem;
 }
