@@ -30,21 +30,6 @@ h1, h2{
   font-weight: bold;
 }
 
-h1{
-  font-size: 2.5rem;
-}
-
-h2{
-  margin-top: 1rem;
-  font-size: 1.8rem;
-}
-
-p, li{
-  margin-top: 0.7rem;
-  font-size: 1.2rem;
-}
-
-
 .navbar {
   background-color: #22262a; 
 }
@@ -91,8 +76,22 @@ p, li{
   margin-left: 3rem;
 }
 
+
 /* Bigger screen */
 @media (min-width: 769px) {
+  h1{
+    font-size: 2.5rem;
+  }
+  
+  h2{
+    margin-top: 1rem;
+    font-size: 1.8rem;
+  }
+  
+  p, li{
+    margin-top: 0.7rem;
+    font-size: 1.2rem;
+  }
   .big-img {
       position: relative;
   }
@@ -108,12 +107,30 @@ p, li{
   }
 }
 
+.about, .contact, .projects{
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
 .about-text h1{
   margin-top: 1rem;
 }
 
 /* Mobile screen */
 @media (max-width: 768px) {
+  h1{
+    font-size: 1.8rem;
+  }
+  
+  h2{
+    margin-top: 1rem;
+    font-size: 1.3rem;
+  }
+  p, li{
+    margin-top: 0.8rem;
+    font-size: 1rem;
+  }
+  
   .text-overlay {
       position: relative;  
       padding: 1rem;
@@ -121,15 +138,7 @@ p, li{
   }
 }
 
-h1{
-  font-size: 1.8rem;
-}
-
-h2{
-  margin-top: 1rem;
-  font-size: 1.3rem;
-}
-p, li{
-  margin-top: 0.8rem;
-  font-size: 1rem;
+.about, .contact, .projects{
+  padding-left: 15px;
+  padding-right: 15px;
 }
