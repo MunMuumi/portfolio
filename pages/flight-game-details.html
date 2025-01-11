@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Game Project - Details</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top navbar-dark ps-3 pe-3">
+        <a class="navbar-brand" href="../index.html">Monami Kirjavainen</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-5 gap-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="../index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about.html">About Me</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="projects.html">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="contact.html">Contact</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-5">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://www.linkedin.com/in/monami-kirjavainen-a599926a" target="_blank">
+                        <img src="../pictures/LI-In-Bug.png" alt="LinkedIn" style="width: 40px; height: 35px;">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <h1>Flight Game Project - Details</h1>
+
+        <section id="flight-game-overview">
+            <h2>About the Game</h2>
+            <p>This flight game is a collaborative group project where players navigate between airports while managing resources and weather conditions. The backend is powered by <strong>MySQL</strong>, <strong>JavaScript</strong>, <strong>Python</strong>, <strong>HTML</strong>, and <strong>CSS</strong>.</p>
+            <p>The game involves real-time weather data fetched from OpenWeatherMap and interactions between JavaScript and Python through APIs. Players must make strategic decisions while managing resources and exploring different airports around the world.</p>
+            <p>
+                This project involved creating a flight game that utilized real-world airport data and a map interface powered by Leaflet and OpenStreetMap. 
+                I contributed by implementing the JavaScript logic for managing map interactions, such as rendering airport markers, drawing flight paths, 
+                and updating game states like battery level and score based on player actions.
+            </p>
+            <p>
+                The game loop handled user inputs and updated game elements dynamically, while APIs facilitated the integration of real-time weather 
+                data and backend database interactions. This project allowed me to deepen my understanding of JavaScript, Python, and API design.
+            </p>
+        </section>
+
+        <!-- Demo Video Section -->
+        <section id="demo-video" class="container mt-5 p-0">
+            <h2>Project Demo</h2>
+            <p>Watch the demo video to see the flight game in action!</p>
+
+            <!-- Vimeo Video Embed -->
+            <div style="padding:53.75% 0 0 0;position:relative; margin-top:20px; margin-bottom:50px;">
+                <iframe src="https://player.vimeo.com/video/1045857462?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                        frameborder="0" 
+                        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
+                        style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+                        title="Flight game project">
+                </iframe>
+            </div>
+            <script src="https://player.vimeo.com/api/player.js"></script>
+        </section>
+        
+        <!-- Code Snippet Section -->
+        <section id="code-snippet" class="container mt-5 p-0">
+            <h2>Code Snippet: `continueGame` Function</h2>
+            <p>This function handles the game state after retrieving the first airport data. It processes the response and updates the game map.</p>
+        
+            <pre><code>
+        async function continueGame(data) {
+            try {
+            airportMarkers.clearLayers();
+            let apName = data.airport_name;
+            apName = apName.replace(slashRegEx, '-').replace(questionRegEx, '-');
+            console.log(apName);
+        
+            // Send the first/current airport's information to Python for the next destinations.
+            const response = await fetch(`http://127.0.0.1:3000/destinations/${data.iso_country}/${data.icao}/${apName}/${data.latitude}/${data.longitude}/${data.country}/${visited_airports}`);
+            if (!response.ok) throw new Error;
+            const jsonData = await response.json();
+            console.log(jsonData);
+        
+            // Set markers and popups for the current airport and three different airport options.
+            jsonData.forEach((airport) => {
+                const latitude = parseFloat(airport.latitude);
+                const longitude = parseFloat(airport.longitude);
+                const type = airport.type;
+                const marker = L.marker([latitude, longitude], {icon: largeIcon}).addTo(gamesite);
+                airportMarkers.addLayer(marker);
+                if (airport.active) {
+                // Zoom to the destination airport.
+                gamesite.flyTo([latitude, longitude], 10);
+                marker.bindPopup(`You are at ${airport.airport_name} in ${airport.country}. Choose your next destination from three options.`);
+                marker.openPopup();
+                marker.setIcon(currentApIcon);
+                displayWeatherIcon(latitude, longitude);
+                } else {
+                marker.setIcon(getIconByType(type)); // Set icon by airport type
+                destinationApts(airport, getPointsByType(type), marker, data); // Popup action based on airport type
+                }
+            });
+            } catch (error) {
+            console.log(error.message);
+            }
+        }
+            </code></pre>
+        </section>
+
+        <!-- Conclusion and Future Improvements Section -->
+        <section id="conclusion" class="container mt-5 mb-5 p-0">
+            <h2>Conclusion and Future Improvements</h2>
+            
+            <p>Through this project, I gained valuable experience in dynamically manipulating a map with JavaScript, allowing for an interactive and visual representation of airport locations and flight paths. I also had the opportunity to work with APIs to integrate real-world data, such as weather and airport information, enhancing the realism and functionality of the game.</p>
+            
+            <p>For future improvements, I aim to focus on writing more readable and maintainable code. This will include improving the organization and clarity of the code, as well as adding comments and documentation where necessary to ensure that future developers can easily understand and work with the project.</p>
+        </section>
+
+        <!-- Link to Back to Projects -->
+        <p><a href="projects.html" class="btn btn-secondary">Back to Projects</a></p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

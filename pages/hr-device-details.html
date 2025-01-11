@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR device - Details</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top navbar-dark ps-3 pe-3">
+        <a class="navbar-brand" href="../index.html">Monami Kirjavainen</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-5 gap-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="../index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about.html">About Me</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="projects.html">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="contact.html">Contact</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-5">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://www.linkedin.com/in/monami-kirjavainen-a599926a" target="_blank">
+                        <img src="../pictures/LI-In-Bug.png" alt="LinkedIn" style="width: 40px; height: 35px;">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <h1>Heart rate monirtoring device - Details</h1>
+
+        <section id="heart-rate-monitor-overview">
+            <h2>About the Device</h2>
+            <p>This heart rate monitoring device offers four key options: Measure Heart Rate, Basic HRV, Kubios, and History.</p>
+        
+            <ul>
+                <li><strong>Measure Heart Rate:</strong> Displays live PPG signals, with the heart rate updated every 5 seconds on the OLED screen.</li>
+                <li><strong>Basic HRV:</strong> Shows HRV metrics locally calculated on the Raspberry Pi Pico, displayed on the OLED screen.</li>
+                <li><strong>Kubios:</strong> Uses MQTT protocol to exchange data between the Raspberry Pi Pico and Kubios cloud. Advanced HRV metrics calculated by Kubios are displayed on the OLED screen.</li>
+                <li><strong>History:</strong> Displays the three most recent HRV measurements from a text file, providing a historical record of the data.</li>
+            </ul>
+        
+            <p>In this group project, I was responsible for developing the class structure and main loop, implementing the main and history menus, and designing the peak detection algorithm for accurate heart rate signal identification. I also coded the calculations for heart rate and HRV, displayed basic HRV analysis results locally on the OLED display, and ensured the heart rate was updated every 5 seconds. Additionally, I established communication with Kubios via MQTT, displaying Kubios's advanced HRV results, and created code to save, retrieve, and display past HRV measurements from a text file.</p>
+        
+            <p>The device uses the <strong>SSD1306_I2C protocol</strong> with a framebuffer to write data to the OLED display. Sensor data is processed in sequence using a <strong>FIFO</strong> structure, with data acquisition handled by Piotimer's hardware timer. The communication between the Raspberry Pi Pico and Kubios cloud is facilitated through a local MQTT broker installed on a Raspberry Pi running in a container. Additionally, interrupts are set up for rotary encoder turns and clicks and also for micro buttons, utilizing the <strong>IRQ</strong> feature of the Raspberry Pi Pico to handle encoder and micro button events efficiently. This enables seamless user input handling and interaction with the device.</p>
+
+        </section>
+
+        <section id="system-diagram">
+            <h2>System Diagram</h2>
+            <p>Below is the system diagram illustrating the architecture of the heart rate monitoring system:</p>
+            <img src="../pictures/HR device project system diagram.png" alt="System Diagram" class="img-fluid">
+        </section>
+        
+        
+        <!-- Demo Video Section -->
+        <section id="demo-video" class="container mt-5 p-0">
+            <h2>Project Demo</h2>
+            <p>Watch the demo video to see the heart rate monitoring device in action!</p>
+
+            <!-- Vimeo Video Embed -->
+            <div style="padding:53.75% 0 0 0;position:relative; margin-top:20px; margin-bottom:50px;">
+                <iframe src="https://player.vimeo.com/video/1045857462?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                        frameborder="0" 
+                        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
+                        style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+                        title="Flight game project">
+                </iframe>
+            </div>
+            <script src="https://player.vimeo.com/api/player.js"></script>
+        </section>
+        
+        <!-- Code Snippet Section -->
+        <section id="code-snippet" class="container mt-5 p-0">
+            <h2>Peak Detection and Heart Rate Calculation</h2>
+            <p>The threshold for peak detection is set based on the maximum and minimum values of the PPG data stored in the FIFO file. Specifically, the threshold is calculated as 80% of the range between the maximum and minimum values. When a PPG value from the FIFO exceeds this threshold, the highest value is updated. Once the PPG value falls below the threshold, the highest value is recorded as a peak. The peak-to-peak interval (PPI) is then calculated based on the positions of these peaks. Using this PPI, heart rate calculations and other metrics like heart rate variability (HRV) are performed.</p>
+            <pre><code>
+        # Calculate the threshold for peak detection
+        def set_threshold(self):
+            #self.max_PPG = max(self.sensor_fifo.data)
+            #self.min_PPG = min(self.sensor_fifo.data)
+            h = max(self.sensor_fifo.data) - min(self.sensor_fifo.data) # Calculate range
+            self.threshold = min(self.sensor_fifo.data) + self.thresval * h # Set threshold
+            self.max_value = self.threshold # Initialize max_value
+        
+        
+        # Detect peaks in the filtered signal   
+        def detect_peaks(self, value):
+            if value > self.max_value:
+                self.max_value = value # Update maximum value
+            elif value < self.threshold and self.max_value > self.threshold: # Check for peaks
+                self.peaks.append(self.count) # Record peak position
+                self.max_value = self.threshold # Reset max value
+        
+        
+        # Calculate heart rate from detected peaks
+        def calculate_hr(self):
+            if len(self.peaks) > 2:
+                num_samples = self.peaks[-1] - self.peaks[-2] # Time difference between peaks
+        
+                if num_samples > 0: # Ensure the sample distance is positive
+                    ppi_seconds = num_samples * 0.004 # Calculate the time between peaks in seconds (0.004 seconds per sample)
+        
+                    if ppi_seconds > 0: # If the time between peaks is positive
+                        hr = 60 / ppi_seconds # Calculate the heart rate in beats per minute (bpm)
+        
+                        if hr > 30 and hr < 200: # Only consider valid heart rates
+                            self.hr_values.append(hr) # Append the valid heart rate to the hr_values list
+                            print(hr) # Print the heart rate value
+        
+                            self.peaks = self.peaks[-1:] # Keep only the latest peak
+                            if self.option == 1 or self.option == 2: # If the HRV analysis or the Kubios menu is selected
+                                self.ppi_intervals.append(int(ppi_seconds*1000)) # Store the PPI value in milliseconds
+        </code></pre>
+        
+            
+        </section>
+
+        <!-- Conclusion and Future Improvements Section -->
+        <section id="conclusion" class="container mt-5 mb-5 p-0">
+            <h2>Conclusion and Future Improvements</h2>
+            <p>This project provided valuable hands-on experience in integrating hardware components, such as sensors, with software. I gained practical knowledge in designing algorithms for detecting peaks and filtering noise, learning through trial and error to refine the peak detection process. Additionally, I developed a deeper understanding of the limitations of embedded systems, such as memory constraints and processing power, and how to optimize code for better performance.</p>
+            <p>As for improvements, a key area to focus on is refactoring the code for better maintainability. Specifically, I plan to split the class structure into smaller, more manageable modules to make the code easier to understand and maintain. Writing cleaner, more modular code will not only improve readability but also enhance future development and troubleshooting.</p>
+            
+        </section>
+
+        <!-- Link to Back to Projects -->
+        <p><a href="projects.html" class="btn btn-secondary">Back to Projects</a></p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
